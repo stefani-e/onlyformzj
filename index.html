@@ -26,8 +26,8 @@ body{min-height:100vh;background:#03010a;font-family:'ZCOOL XiaoWei',serif;overf
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .card-title{font-family:'Ma Shan Zheng',cursive;font-size:32px;color:#f0c4e8;margin-bottom:5px;letter-spacing:4px;text-shadow:0 0 20px rgba(200,100,255,.5)}
 .card-sub{font-size:13px;color:rgba(220,180,255,.65);margin-bottom:14px;letter-spacing:2px}
-.gif-wrap{margin:0 auto 18px;width:112px;height:112px;border-radius:50%;overflow:hidden;border:2.5px solid rgba(180,100,255,.5);box-shadow:0 0 20px rgba(160,80,255,.35);background:#1a0a2e}
-.gif-wrap img{width:100%;height:100%;object-fit:cover}
+.gif-wrap{margin:0 auto 18px;width:112px;height:112px;border-radius:50%;overflow:hidden;border:2.5px solid rgba(180,100,255,.5);box-shadow:0 0 20px rgba(160,80,255,.35);background:#1a0a2e;display:flex;align-items:center;justify-content:center}
+.gif-wrap img{width:100%;height:100%;object-fit:cover;display:block}
 
 /* ── Buttons ── */
 .btn-group{display:flex;gap:11px;justify-content:center;align-items:center;flex-wrap:wrap;min-height:62px}
@@ -50,7 +50,6 @@ body{min-height:100vh;background:#03010a;font-family:'ZCOOL XiaoWei',serif;overf
 
 #page-final{background:#03010a;z-index:20;overflow:hidden}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 #ily-canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
 .ily-float-bg{position:absolute;inset:0;z-index:1;overflow:visible;pointer-events:none}
 .ily-word{
@@ -61,10 +60,10 @@ body{min-height:100vh;background:#03010a;font-family:'ZCOOL XiaoWei',serif;overf
   animation:wordFloat linear infinite;
 }
 @keyframes wordFloat{
-  0%  {opacity:0;  transform:translateY(0)       rotate(var(--r))}
-  10% {opacity:1}
-  85% {opacity:.8}
-  100%{opacity:0;  transform:translateY(-120vh)   rotate(var(--r))}
+  0%   {opacity:0;  transform:translateY(0)       rotate(var(--r))}
+  10%  {opacity:1}
+  85%  {opacity:.8}
+  100% {opacity:0;  transform:translateY(-120vh)   rotate(var(--r))}
 }
 .center-love{
   position:relative;z-index:5;
@@ -91,14 +90,13 @@ body{min-height:100vh;background:#03010a;font-family:'ZCOOL XiaoWei',serif;overf
 <div class="nebula nb2"></div>
 <div class="nebula nb3"></div>
 
-<!-- ══ PAGE 1 ══ -->
 <div class="page" id="page1">
   <div class="card">
     <span class="card-emoji">🐾</span>
     <div class="card-title">你喜欢我吗？</div>
     <div class="card-sub">认真回答哦 ～</div>
     <div class="gif-wrap">
-      <img src="iloveu.gif" alt=""/>
+      <img id="main-gif" src="" alt="Love GIF"/>
     </div>
     <div class="btn-group">
       <button class="btn btn-xh" id="btn-xh" onclick="react('xh')">喜欢</button>
@@ -109,7 +107,6 @@ body{min-height:100vh;background:#03010a;font-family:'ZCOOL XiaoWei',serif;overf
   </div>
 </div>
 
-<!-- ══ PAGE 2 ══ -->
 <div class="page hidden" id="page2">
   <div class="card">
     <span class="card-emoji">🌙</span>
@@ -122,12 +119,10 @@ body{min-height:100vh;background:#03010a;font-family:'ZCOOL XiaoWei',serif;overf
   </div>
 </div>
 
-<!-- ══ PAGE 3: Beating heart particles ══ -->
 <div class="page hidden" id="page-heart">
   <canvas id="heart-canvas3" style="position:absolute;inset:0;z-index:1"></canvas>
 </div>
 
-<!-- ══ PAGE 4: I Love You world ══ -->
 <div class="page hidden" id="page-final">
   <div class="ily-float-bg" id="ily-float-bg"></div>
   <div class="center-love">
@@ -137,6 +132,13 @@ body{min-height:100vh;background:#03010a;font-family:'ZCOOL XiaoWei',serif;overf
 </div>
 
 <script>
+/* ── GIF Fix: Force load with timestamp ── */
+window.onload = function() {
+  const gif = document.getElementById('main-gif');
+  // Adding ?t= forces the browser to refresh the file from your folder
+  gif.src = "iloveu.gif?t=" + new Date().getTime();
+};
+
 /* ════════════ GALAXY BACKGROUND ════════════ */
 const gCanvas = document.getElementById('galaxy-canvas');
 const gCtx    = gCanvas.getContext('2d');
@@ -275,7 +277,7 @@ function initBeatingHeart(){
 /* ════════════ PAGE 4 – I LOVE YOU WORLD ════════════ */
 const ILY_WORDS = [
   {t:'我爱你',            hue:320}, {t:'I love you',      hue:270},
-  {t:'愛してる',          hue:200}, {t:'사랑해',           hue:340},
+  {t:'愛してる',           hue:200}, {t:'사랑해',            hue:340},
   {t:'Je t\'aime',       hue:260}, {t:'Te amo',           hue:15},
   {t:'Ti amo',           hue:350}, {t:'Eu te amo',        hue:300},
   {t:'Ich liebe dich',   hue:210}, {t:'أحبك',             hue:45},
@@ -300,7 +302,6 @@ function initILYWorld(){
 
     const size  = 15 + Math.random()*28;
     const dur   = 7  + Math.random()*9;
-    // negative delay = already mid-flight immediately
     const delay = i < 36
       ? -(Math.random() * dur * 0.85)
       : -(Math.random() * 2);
